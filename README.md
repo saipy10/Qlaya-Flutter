@@ -1,27 +1,29 @@
-# qlaya (Dart)
+# qlaya_flutter
 
-**QLaya** (QLaya) — Dart client for the fast, local, on-device decision engine
+**QLaya Flutter** — Flutter and Dart client for the fast, local, on-device decision engine
 with user-selectable quantized model variants.
 
 ## Installation
 
-Add to your `pubspec.yaml`:
+Add to your Flutter or Dart project:
+
+```sh
+flutter pub add qlaya_flutter
+# or for Dart console / backend apps:
+dart pub add qlaya_flutter
+```
+
+Or add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  qlaya: ^0.4.0
-```
-
-Then run:
-
-```sh
-dart pub get
+  qlaya_flutter: ^0.4.0
 ```
 
 ## Quick Start
 
 ```dart
-import 'package:qlaya/qlaya.dart';
+import 'package:qlaya_flutter/qlaya_flutter.dart';
 
 void main() async {
   // List all quantized model variants
@@ -39,13 +41,13 @@ void main() async {
   );
 
   print(result.answers);
-  await client.close();
+  client.close();
 }
 ```
 
 ## Available Models
 
-All model variants come from the project's benchmark experiments:
+All 10 model variants are available on Hugging Face at [saipy10/qlaya](https://huggingface.co/saipy10/qlaya) from the project's benchmark experiments:
 
 | QLaya ID | Size | Latency (p50) | RAM | Notes |
 |---|---|---|---|---|
@@ -81,4 +83,4 @@ qlaya-serve --host 0.0.0.0 --port 8000
 
 ## License
 
-Apache-2.0 — see [LICENSE](../LICENSE).
+Apache-2.0 — see [LICENSE](LICENSE).

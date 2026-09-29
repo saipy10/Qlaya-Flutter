@@ -1,11 +1,18 @@
-name: qlaya
+name: qlaya_flutter
 description: >
-  QLaya — fast, local, on-device decision engine with calibrated
-  probabilities and user-selectable quantized model variants. Dart client for the
-  QLaya HTTP server or direct ONNX inference.
+  QLaya Flutter & Dart client for the fast, local, on-device decision engine
+  with calibrated probabilities and user-selectable quantized model variants.
 version: 0.4.0
 repository: https://github.com/saipy10/QLaya
 homepage: https://github.com/saipy10/QLaya
+issue_tracker: https://github.com/saipy10/QLaya/issues
+
+topics:
+  - flutter
+  - machine-learning
+  - onnx
+  - ai
+  - inference
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

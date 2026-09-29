@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:qlaya/qlaya.dart';
+import 'package:qlaya_flutter/qlaya_flutter.dart';
 
 void main() {
   group('QLayaModels', () {
