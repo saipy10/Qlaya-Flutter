@@ -1,7 +1,13 @@
 # qlaya_flutter
 
+[![pub package](https://img.shields.io/pub/v/qlaya_flutter.svg)](https://pub.dev/packages/qlaya_flutter)
+[![GitHub](https://img.shields.io/badge/GitHub-saipy10%2FQlaya--Flutter-blue?logo=github)](https://github.com/saipy10/Qlaya-Flutter)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 **QLaya Flutter** — Flutter and Dart client for the fast, local, on-device decision engine
 with user-selectable quantized model variants.
+
+[GitHub Repository](https://github.com/saipy10/Qlaya-Flutter) | [pub.dev Package](https://pub.dev/packages/qlaya_flutter) | [Issues & Feedback](https://github.com/saipy10/Qlaya-Flutter/issues) | [Main QLaya Engine](https://github.com/saipy10/QLaya)
 
 ## Installation
 
@@ -17,7 +23,7 @@ Or add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  qlaya_flutter: ^0.4.0
+  qlaya_flutter: ^0.4.1
 ```
 
 ## Quick Start

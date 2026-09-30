@@ -2,7 +2,7 @@ name: qlaya_flutter
 description: >
   QLaya Flutter & Dart client for the fast, local, on-device decision engine
   with calibrated probabilities and user-selectable quantized model variants.
-version: 0.4.0
+version: 0.4.1
 repository: https://github.com/saipy10/Qlaya-Flutter
 homepage: https://github.com/saipy10/Qlaya-Flutter
 issue_tracker: https://github.com/saipy10/Qlaya-Flutter/issues

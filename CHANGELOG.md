@@ -1,3 +1,8 @@
+## 0.4.1
+
+* Update package metadata and repository links to dedicated repository: [saipy10/Qlaya-Flutter](https://github.com/saipy10/Qlaya-Flutter).
+* Add badges, repository documentation, and issue tracker links.
+
 ## 0.4.0
 
 * Initial release of `qlaya_flutter` for Flutter and Dart.
