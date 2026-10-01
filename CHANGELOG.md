@@ -1,3 +1,7 @@
+## 0.5.3
+
+* **pub.dev Image Compatibility**: Updated cover banner in `README.md` to use direct GitHub CDN asset URL for `cover.png`, ensuring reliable rendering on pub.dev and GitHub.
+
 ## 0.5.2
 
 * **Visual Cover Banner**: Added official vector-wrapped `cover.svg` hero banner to package documentation.

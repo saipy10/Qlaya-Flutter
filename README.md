@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 <p align="center">
-  <img src="cover.svg" alt="QLaya Flutter" width="100%" />
+  <img src="https://raw.githubusercontent.com/saipy10/Qlaya-Flutter/main/cover.png" alt="QLaya Flutter" width="100%" />
 </p>
 
 **QLaya Flutter** is a fast, type-safe Flutter & Dart client for the QLaya on-device decision engine, powered by the **`qlaya.int8.onnx`** model hosted on Hugging Face Hub.
