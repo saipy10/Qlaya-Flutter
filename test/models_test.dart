@@ -1,45 +1,72 @@
+import 'dart:io';
 import 'package:test/test.dart';
 import 'package:qlaya_flutter/qlaya_flutter.dart';
 
 void main() {
-  group('QLayaModels', () {
-    test('all contains 10 variants', () {
-      expect(QLayaModels.all.length, equals(10));
+  group('QLayaModels (Bundled qlaya.int8.onnx)', () {
+    test('contains only 1 model variant', () {
+      expect(QLayaModels.all.length, equals(1));
+      expect(QLayaModels.all.containsKey('qlaya.int8.onnx'), isTrue);
     });
 
-    test('allIds is sorted', () {
-      final ids = QLayaModels.allIds;
-      expect(ids, equals(List.from(ids)..sort()));
+    test('allIds contains only qlaya.int8.onnx', () {
+      expect(QLayaModels.allIds, equals(['qlaya.int8.onnx']));
     });
 
-    test('resolve exact key works', () {
-      final spec = QLayaModels.resolve('QLaya-TopProduction');
+    test('int8 and defaultModel are identical', () {
+      expect(QLayaModels.defaultModel, equals(QLayaModels.int8));
+      expect(QLayaModels.int8.id, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.int8.fileName, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.int8.repo, equals('saipy10/qlaya'));
+      expect(QLayaModels.int8.subfolder, equals('qlaya-int8'));
+      expect(QLayaModels.int8.sizeMb, equals(571.9));
+      expect(QLayaModels.int8.latencyP50Ms, equals(134.7));
+      expect(QLayaModels.int8.ramWorkingSetMb, equals(590));
+      expect(QLayaModels.int8.assetPath, equals('qlaya.int8.onnx'));
+    });
+
+    test('resolve exact filename works', () {
+      final spec = QLayaModels.resolve('qlaya.int8.onnx');
+      expect(spec.fileName, equals('qlaya.int8.onnx'));
       expect(spec.subfolder, equals('qlaya-int8'));
     });
 
-    test('resolve fuzzy slug works (no prefix, hyphens stripped)', () {
-      final spec = QLayaModels.resolve('ultra-fast-edge');
-      expect(spec.subfolder, equals('qlaya-distil-6l-int8'));
+    test('resolve legacy aliases map to bundled int8 model', () {
+      expect(QLayaModels.resolve('QLaya-TopProduction').fileName, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.resolve('qlaya-int8').fileName, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.resolve('int8').fileName, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.resolve('TOPPRODUCTION').fileName, equals('qlaya.int8.onnx'));
     });
 
-    test('resolve fuzzy slug case-insensitive', () {
-      final spec = QLayaModels.resolve('ULTRASMALLSTORAGE');
-      expect(spec.subfolder, equals('qlaya-distil-6l-int4'));
-      final spec2 = QLayaModels.resolve('QLaya-UltraSmallStorage');
-      expect(spec2.subfolder, equals('qlaya-distil-6l-int4'));
-    });
+    test('resolve throws ArgumentError for removed legacy models', () {
+      final removedModels = [
+        'QLaya-OriginalBaseline',
+        'QLaya-Balanced',
+        'QLaya-SlowCPU',
+        'QLaya-DegradedAccuracy',
+        'QLaya-IntermediateStudent',
+        'QLaya-HighSpeedProduction',
+        'QLaya-CompactStudent',
+        'QLaya-UltraFastEdge',
+        'QLaya-UltraSmallStorage',
+        'non-existent-model',
+      ];
 
-    test('resolve throws ArgumentError for unknown id', () {
-      expect(() => QLayaModels.resolve('QLaya-NonExistent'), throwsArgumentError);
-    });
-
-    test('all specs have positive sizeMb and latency', () {
-      for (final spec in QLayaModels.all.values) {
-        expect(spec.sizeMb, greaterThan(0));
-        expect(spec.latencyP50Ms, greaterThan(0));
-        expect(spec.ramWorkingSetMb, greaterThan(0));
-        expect(spec.repo, isNotEmpty);
+      for (final modelId in removedModels) {
+        expect(
+          () => QLayaModels.resolve(modelId),
+          throwsArgumentError,
+          reason: '$modelId should be rejected because only qlaya.int8.onnx is supported',
+        );
       }
+    });
+
+    test('bundled qlaya.int8.onnx file exists on disk with valid size', () {
+      final file = File(QLayaModels.int8.fileName);
+      expect(file.existsSync(), isTrue,
+          reason: 'qlaya.int8.onnx must be present in the package');
+      expect(file.lengthSync(), greaterThan(500 * 1024 * 1024),
+          reason: 'qlaya.int8.onnx should be ~572 MB');
     });
   });
 }

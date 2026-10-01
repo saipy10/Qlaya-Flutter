@@ -1,7 +1,13 @@
 /// QLaya — Flutter and Dart client library.
 ///
-/// Provides a type-safe interface to the QLaya HTTP server or local inference.
-/// Users can select from 10 quantized model variants derived from benchmark experiments.
+/// Provides a type-safe interface to the QLaya decision engine powered exclusively
+/// by the bundled `qlaya.int8.onnx` quantized model.
+///
+/// Supports high-level tasks for:
+/// - Intent and category classification
+/// - Continuous sentiment and urgency scoring
+/// - Boolean question verification
+/// - Workflow and destination routing
 ///
 /// ## Quick start
 ///
@@ -11,18 +17,13 @@
 /// void main() async {
 ///   final client = QLayaClient(baseUrl: 'http://localhost:8000');
 ///
-///   // List all available quantized model variants
-///   print(QLayaModels.allIds);
-///
-///   // Pick a model by QLaya ID
-///   final model = QLayaModels.resolve('QLaya-TopProduction');
-///
-///   // Make a routing decision
-///   final result = await client.predict(
-///     text: 'I need a refund for a duplicate charge',
-///     model: model,
+///   // Run an intent classification task using bundled qlaya.int8.onnx
+///   final result = await client.classify(
+///     text: 'I was charged twice, please refund',
+///     choices: ['refund', 'billing_issue', 'general_support'],
 ///   );
-///   print(result);
+///   print('Choice: ${result.choice} (${result.confidence})');
+///
 ///   client.close();
 /// }
 /// ```
@@ -30,4 +31,5 @@ library qlaya_flutter;
 
 export 'src/client.dart';
 export 'src/models.dart';
+export 'src/tasks.dart';
 export 'src/types.dart';

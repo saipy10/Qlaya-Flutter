@@ -1,31 +1,75 @@
+import 'dart:io';
 import 'package:qlaya_flutter/qlaya_flutter.dart';
 
 void main() async {
-  print('=== QLaya Quantized Models ===');
-  for (final id in QLayaModels.allIds) {
-    final spec = QLayaModels.all[id]!;
-    print('- $id: ${spec.sizeMb} MB (p50: ${spec.latencyP50Ms} ms, RAM: ${spec.ramWorkingSetMb} MB) — ${spec.description}');
+  print('====================================================');
+  print('   QLaya Flutter / Dart — Bundled ONNX Decision Engine');
+  print('====================================================\n');
+
+  // 1. Inspect the bundled model
+  final model = QLayaModels.int8;
+  print('Model Identifier : ${model.id}');
+  print('Bundled File     : ${model.fileName}');
+  print('HuggingFace Repo : ${model.repo} (${model.subfolder})');
+  print('Model Size       : ${model.sizeMb} MB');
+  print('Benchmark Latency: ${model.latencyP50Ms} ms (p50)');
+  print('Working RAM      : ${model.ramWorkingSetMb} MB');
+
+  // Verify bundled file existence
+  final file = File(model.fileName);
+  if (file.existsSync()) {
+    final sizeInMb = (file.lengthSync() / (1024 * 1024)).toStringAsFixed(1);
+    print('Local File Status: Found on disk ($sizeInMb MB)\n');
+  } else {
+    print('Local File Status: Asset configured at "${model.assetPath}"\n');
   }
 
-  // Resolve model by exact key or fuzzy slug
-  final model = QLayaModels.resolve('ultra-fast-edge');
-  print('\nResolved model spec:');
-  print('  Repo: ${model.repo}');
-  print('  Subfolder: ${model.subfolder}');
-  print('  Size: ${model.sizeMb} MB');
-  print('  Latency: ${model.latencyP50Ms} ms');
-
-  // Client usage against local server (qlaya-serve)
+  // 2. Initialize QLaya Client (uses qlaya.int8.onnx for all tasks)
   final client = QLayaClient(baseUrl: 'http://localhost:8000');
+
   try {
-    print('\nSending sample query to local server...');
-    final result = await client.predict(
-      text: 'I was charged twice, please refund',
-      model: model,
+    print('--- Task 1: Intent Classification ---');
+    final intent = await client.classify(
+      text: 'I was charged twice on my invoice, please refund my money',
+      choices: ['refund_request', 'subscription_cancel', 'tech_support', 'general_query'],
+      instruction: 'Identify the primary intent of the user message',
     );
-    print('Prediction answers: ${result.answers}');
+    print('Input   : "I was charged twice on my invoice, please refund my money"');
+    print('Result  : ${intent.choice}');
+    print('Confidence: ${intent.confidence ?? "N/A"}\n');
+
+    print('--- Task 2: Urgency / Severity Scoring ---');
+    final score = await client.score(
+      text: 'CRITICAL: Database connection pool exhausted in production cluster!',
+      instruction: 'Rate the urgency level from 0.0 (low) to 1.0 (emergency)',
+    );
+    print('Input   : "CRITICAL: Database connection pool exhausted in production cluster!"');
+    print('Score   : ${score.score}');
+    print('Confidence: ${score.confidence ?? "N/A"}\n');
+
+    print('--- Task 3: Boolean Verification ---');
+    final verification = await client.verify(
+      text: 'The app crashes whenever I tap the profile icon',
+      statement: 'User is reporting a bug or application failure',
+    );
+    print('Input   : "The app crashes whenever I tap the profile icon"');
+    print('Decision: ${verification.value ? "TRUE" : "FALSE"}');
+    print('Confidence: ${verification.confidence ?? "N/A"}\n');
+
+    print('--- Task 4: Workflow Routing ---');
+    final routing = await client.route(
+      text: 'Need to add 15 new enterprise user seats for next quarter',
+      routes: ['sales_enterprise', 'tier1_support', 'billing_ops', 'legal_compliance'],
+      instruction: 'Route this inquiry to the appropriate department',
+    );
+    print('Input   : "Need to add 15 new enterprise user seats for next quarter"');
+    print('Route To: ${routing.route}');
+    print('Confidence: ${routing.confidence ?? "N/A"}\n');
+
+    print('All tasks executed successfully with qlaya.int8.onnx!');
   } catch (e) {
-    print('Note: To run live prediction, start the server using `qlaya-serve` ($e)');
+    print('Note: Live task execution requires running `qlaya-serve` ($e)');
+    print('Run `pip install qlaya[serve]` followed by `qlaya-serve --model qlaya.int8.onnx`');
   } finally {
     client.close();
   }

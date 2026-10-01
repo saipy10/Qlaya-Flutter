@@ -1,8 +1,9 @@
 name: qlaya_flutter
 description: >
   QLaya Flutter & Dart client for the fast, local, on-device decision engine
-  with calibrated probabilities and user-selectable quantized model variants.
-version: 0.4.1
+  powered by the bundled qlaya.int8.onnx model for classification, scoring,
+  verification, and routing tasks.
+version: 0.5.0
 repository: https://github.com/saipy10/Qlaya-Flutter
 homepage: https://github.com/saipy10/Qlaya-Flutter
 issue_tracker: https://github.com/saipy10/Qlaya-Flutter/issues
@@ -26,3 +27,8 @@ dev_dependencies:
   json_serializable: ^6.7.0
   test: ^1.24.0
   lints: ^3.0.0
+
+flutter:
+  assets:
+    - qlaya.int8.onnx
+

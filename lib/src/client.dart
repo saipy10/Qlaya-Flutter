@@ -4,34 +4,39 @@ library;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models.dart';
+import 'tasks.dart';
 import 'types.dart';
 
 /// A client for the QLaya HTTP server (`qlaya-serve`).
 ///
-/// Connects to a running [QLaya serve](https://github.com/saipy10/QLaya)
-/// instance and sends prediction requests.
+/// Connects to a running QLaya inference engine instance and executes
+/// tasks exclusively using the bundled `qlaya.int8.onnx` model.
 ///
 /// ## Example
 ///
 /// ```dart
 /// final client = QLayaClient(baseUrl: 'http://localhost:8000');
 ///
-/// // Pick the recommended production model
-/// final model = QLayaModels.resolve('QLaya-TopProduction');
-///
-/// final result = await client.predict(
-///   text: 'Cancel my subscription immediately',
-///   model: model,
-///   questions: [
-///     QLayaQuestion(
-///       id: 'intent',
-///       text: 'What does the user want?',
-///       type: 'choice',
-///       choices: ['refund', 'cancel', 'support', 'other'],
-///     ),
-///   ],
+/// // Intent Classification Task
+/// final intent = await client.classify(
+///   text: 'I was charged twice, please refund',
+///   choices: ['billing_refund', 'cancellation', 'tech_support', 'other'],
 /// );
-/// print(result.answers);
+/// print('Intent: ${intent.choice} (${intent.confidence})');
+///
+/// // Urgency Scoring Task
+/// final urgency = await client.score(
+///   text: 'Server is completely down and unreachable!',
+/// );
+/// print('Urgency score: ${urgency.score}');
+///
+/// // Boolean Verification Task
+/// final needsRefund = await client.verify(
+///   text: 'I was charged twice, please refund',
+///   statement: 'User is requesting a refund',
+/// );
+/// print('Needs refund: ${needsRefund.value}');
+///
 /// client.close();
 /// ```
 class QLayaClient {
@@ -45,26 +50,112 @@ class QLayaClient {
     this.timeout = const Duration(seconds: 30),
   }) : _http = httpClient ?? http.Client();
 
-  /// Send a prediction request to the QLaya server.
+  /// Execute any typed [QLayaTask] using the bundled `qlaya.int8.onnx` model.
+  Future<T> runTask<T>(
+    QLayaTask<T> task, {
+    Map<String, String>? extraHeaders,
+  }) async {
+    final prediction = await predict(
+      text: task.text,
+      model: task.model,
+      questions: task.buildQuestions(),
+      extraHeaders: extraHeaders,
+    );
+    return task.parseResult(prediction);
+  }
+
+  /// Classify [text] into one of the candidate [choices].
+  Future<QLayaClassificationResult> classify({
+    required String text,
+    required List<String> choices,
+    String? instruction,
+    String questionId = 'classification',
+    Map<String, String>? extraHeaders,
+  }) =>
+      runTask(
+        QLayaTasks.classify(
+          text: text,
+          choices: choices,
+          questionText: instruction,
+          questionId: questionId,
+        ),
+        extraHeaders: extraHeaders,
+      );
+
+  /// Score or rate [text] on a continuous scale (e.g. sentiment, urgency).
+  Future<QLayaScoreResult> score({
+    required String text,
+    String? instruction,
+    String questionId = 'score',
+    Map<String, String>? extraHeaders,
+  }) =>
+      runTask(
+        QLayaTasks.score(
+          text: text,
+          questionText: instruction,
+          questionId: questionId,
+        ),
+        extraHeaders: extraHeaders,
+      );
+
+  /// Verify whether a boolean [statement] holds true for [text].
+  Future<QLayaBoolResult> verify({
+    required String text,
+    required String statement,
+    String questionId = 'verify',
+    Map<String, String>? extraHeaders,
+  }) =>
+      runTask(
+        QLayaTasks.verify(
+          text: text,
+          statement: statement,
+          questionId: questionId,
+        ),
+        extraHeaders: extraHeaders,
+      );
+
+  /// Route [text] to one of the target [routes].
+  Future<QLayaRoutingResult> route({
+    required String text,
+    required List<String> routes,
+    String? instruction,
+    String questionId = 'route',
+    Map<String, String>? extraHeaders,
+  }) =>
+      runTask(
+        QLayaTasks.route(
+          text: text,
+          routes: routes,
+          instruction: instruction,
+          questionId: questionId,
+        ),
+        extraHeaders: extraHeaders,
+      );
+
+  /// Send a low-level prediction request to the QLaya server.
   ///
   /// [text] is the input to classify/route.
-  /// [model] selects the quantized variant; defaults to `QLaya-TopProduction`.
-  /// [questions] overrides the default router questions.
+  /// [model] selects the model specification; defaults to the bundled `qlaya.int8.onnx`.
+  /// [questions] questions defining the routing/classification decisions.
   Future<QLayaPrediction> predict({
     required String text,
     QLayaModelSpec? model,
     List<QLayaQuestion>? questions,
     Map<String, String>? extraHeaders,
   }) async {
-    final resolvedModel = model ?? QLayaModels.all['QLaya-TopProduction']!;
+    final resolvedModel = model ?? QLayaModels.int8;
 
     final body = <String, dynamic>{
       'text': text,
       'model': {
+        'id': resolvedModel.id,
+        'file': resolvedModel.fileName,
         'repo': resolvedModel.repo,
-        if (resolvedModel.subfolder != null) 'subfolder': resolvedModel.subfolder,
+        if (resolvedModel.subfolder != null)
+          'subfolder': resolvedModel.subfolder,
       },
-      if (questions != null) 'questions': questions.map((q) => q.toJson()).toList(),
+      if (questions != null)
+        'questions': questions.map((q) => q.toJson()).toList(),
     };
 
     final uri = Uri.parse('$baseUrl/predict');
@@ -90,12 +181,15 @@ class QLayaClient {
     return QLayaPrediction.fromJson(json);
   }
 
-  /// List available models from the server (requires server support).
+  /// List available models from the server.
   Future<List<String>> listModels() async {
     final uri = Uri.parse('$baseUrl/models');
     final response = await _http.get(uri).timeout(timeout);
     if (response.statusCode != 200) {
-      throw QLayaApiException(statusCode: response.statusCode, body: response.body);
+      throw QLayaApiException(
+        statusCode: response.statusCode,
+        body: response.body,
+      );
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     return List<String>.from(json['models'] as List? ?? []);
