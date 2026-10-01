@@ -16,3 +16,9 @@ packages/
 # OS
 .DS_Store
 Thumbs.db
+
+# Large model files (hosted on Hugging Face saipy10/qlaya)
+*.onnx
+*.onnx.data
+*.download.tmp
+
