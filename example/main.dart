@@ -15,16 +15,18 @@ void main() async {
   print('Benchmark Latency: ${model.latencyP50Ms} ms (p50)');
   print('Working RAM      : ${model.ramWorkingSetMb} MB');
 
-  // Verify bundled file existence
-  final file = File(model.fileName);
+  // Verify local model existence or show Hugging Face download instructions
+  final file = QLayaDownloader.getModelFile();
   if (file.existsSync()) {
     final sizeInMb = (file.lengthSync() / (1024 * 1024)).toStringAsFixed(1);
     print('Local File Status: Found on disk ($sizeInMb MB)\n');
   } else {
-    print('Local File Status: Asset configured at "${model.assetPath}"\n');
+    print('Local File Status: Model not downloaded yet.');
+    print('Download via CLI : dart run qlaya_flutter:download');
+    print('Or direct URL    : ${model.downloadUrl}\n');
   }
 
-  // 2. Initialize QLaya Client (uses qlaya.int8.onnx for all tasks)
+  // 2. Initialize QLaya Client (uses qlaya.int8.onnx for inference)
   final client = QLayaClient(baseUrl: 'http://localhost:8000');
 
   try {

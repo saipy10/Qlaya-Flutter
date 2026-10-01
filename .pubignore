@@ -1,0 +1,16 @@
+# Exclude large ONNX model files from pub.dev package archive
+# The model weights are hosted on Hugging Face at https://huggingface.co/saipy10/qlaya
+# and can be downloaded using `dart run qlaya_flutter:download` or QLayaDownloader.
+qlaya.int8.onnx
+*.onnx
+*.onnx.data
+*.download.tmp
+
+# Build artifacts and tools
+.dart_tool/
+build/
+.git/
+.github/
+.vscode/
+.idea/
+*.log

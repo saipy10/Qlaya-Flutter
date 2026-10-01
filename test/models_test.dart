@@ -61,12 +61,38 @@ void main() {
       }
     });
 
-    test('bundled qlaya.int8.onnx file exists on disk with valid size', () {
+    test('downloadUrl resolves to Hugging Face Hub direct link', () {
+      expect(
+        QLayaModels.int8.downloadUrl,
+        equals('https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx'),
+      );
+      expect(
+        QLayaDownloader.getDownloadUri().toString(),
+        equals('https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx'),
+      );
+    });
+
+    test('QLayaDownloader resolves target model file path correctly', () {
+      final defaultFile = QLayaDownloader.getModelFile();
+      expect(defaultFile.path, equals('qlaya.int8.onnx'));
+
+      final customDirFile = QLayaDownloader.getModelFile(directory: 'custom/dir');
+      expect(customDirFile.path.replaceAll('\\', '/'), contains('custom/dir/qlaya.int8.onnx'));
+
+      final customPathFile = QLayaDownloader.getModelFile(path: '/custom/path/model.onnx');
+      expect(customPathFile.path.replaceAll('\\', '/'), equals('/custom/path/model.onnx'));
+    });
+
+    test('validates local qlaya.int8.onnx file if present on disk', () {
       final file = File(QLayaModels.int8.fileName);
-      expect(file.existsSync(), isTrue,
-          reason: 'qlaya.int8.onnx must be present in the package');
-      expect(file.lengthSync(), greaterThan(500 * 1024 * 1024),
-          reason: 'qlaya.int8.onnx should be ~572 MB');
+      if (file.existsSync()) {
+        expect(
+          file.lengthSync(),
+          greaterThan(500 * 1024 * 1024),
+          reason: 'qlaya.int8.onnx should be ~572 MB',
+        );
+        expect(QLayaDownloader.isModelAvailable(), isTrue);
+      }
     });
   });
 }

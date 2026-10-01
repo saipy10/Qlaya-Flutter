@@ -30,6 +30,7 @@
 library qlaya_flutter;
 
 export 'src/client.dart';
+export 'src/downloader.dart';
 export 'src/models.dart';
 export 'src/tasks.dart';
 export 'src/types.dart';

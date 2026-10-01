@@ -44,6 +44,10 @@ class QLayaModelSpec {
     required this.ramWorkingSetMb,
     this.assetPath = 'qlaya.int8.onnx',
   });
+
+  /// Direct download URL from Hugging Face Hub repository.
+  String get downloadUrl =>
+      'https://huggingface.co/$repo/resolve/main/$fileName';
 }
 
 /// Registry of QLaya models.

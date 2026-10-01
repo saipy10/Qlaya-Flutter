@@ -3,6 +3,7 @@ library;
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'downloader.dart';
 import 'models.dart';
 import 'tasks.dart';
 import 'types.dart';
@@ -10,12 +11,13 @@ import 'types.dart';
 /// A client for the QLaya HTTP server (`qlaya-serve`).
 ///
 /// Connects to a running QLaya inference engine instance and executes
-/// tasks exclusively using the bundled `qlaya.int8.onnx` model.
+/// tasks using the `qlaya.int8.onnx` model (hosted on Hugging Face).
 ///
 /// ## Example
 ///
 /// ```dart
-/// final client = QLayaClient(baseUrl: 'http://localhost:8000');
+/// // Uses default http://localhost:8000 or custom baseUrl
+/// final client = QLayaClient();
 ///
 /// // Intent Classification Task
 /// final intent = await client.classify(
@@ -23,19 +25,6 @@ import 'types.dart';
 ///   choices: ['billing_refund', 'cancellation', 'tech_support', 'other'],
 /// );
 /// print('Intent: ${intent.choice} (${intent.confidence})');
-///
-/// // Urgency Scoring Task
-/// final urgency = await client.score(
-///   text: 'Server is completely down and unreachable!',
-/// );
-/// print('Urgency score: ${urgency.score}');
-///
-/// // Boolean Verification Task
-/// final needsRefund = await client.verify(
-///   text: 'I was charged twice, please refund',
-///   statement: 'User is requesting a refund',
-/// );
-/// print('Needs refund: ${needsRefund.value}');
 ///
 /// client.close();
 /// ```
@@ -45,10 +34,23 @@ class QLayaClient {
   final Duration timeout;
 
   QLayaClient({
-    required this.baseUrl,
+    this.baseUrl = 'http://localhost:8000',
     http.Client? httpClient,
     this.timeout = const Duration(seconds: 30),
   }) : _http = httpClient ?? http.Client();
+
+  /// Ensures that the model weights are downloaded locally from Hugging Face.
+  Future<void> ensureModel({
+    String? directory,
+    String? path,
+    void Function(QLayaDownloadProgress progress)? onProgress,
+  }) async {
+    await QLayaDownloader.ensureModel(
+      directory: directory,
+      path: path,
+      onProgress: onProgress,
+    );
+  }
 
   /// Execute any typed [QLayaTask] using the bundled `qlaya.int8.onnx` model.
   Future<T> runTask<T>(
