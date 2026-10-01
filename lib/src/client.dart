@@ -1,4 +1,4 @@
-/// QLaya HTTP client — wraps the qlaya-serve REST API.
+/// QLaya client for decision tasks.
 library;
 
 import 'dart:convert';
@@ -8,10 +8,10 @@ import 'models.dart';
 import 'tasks.dart';
 import 'types.dart';
 
-/// A client for the QLaya HTTP server (`qlaya-serve`).
+/// A client for connecting to the QLaya decision engine.
 ///
-/// Connects to a running QLaya inference engine instance and executes
-/// tasks using the `qlaya.int8.onnx` model (hosted on Hugging Face).
+/// Executes classification, scoring, verification, and routing tasks
+/// using the `qlaya.int8.onnx` model (hosted on Hugging Face).
 ///
 /// ## Example
 ///
@@ -201,7 +201,7 @@ class QLayaClient {
   void close() => _http.close();
 }
 
-/// Exception thrown when the QLaya HTTP server returns a non-200 response.
+/// Exception thrown when the QLaya decision engine endpoint returns a non-200 response.
 class QLayaApiException implements Exception {
   final int statusCode;
   final String body;

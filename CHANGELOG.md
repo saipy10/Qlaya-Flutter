@@ -1,3 +1,10 @@
+## 0.5.1
+
+* **Interactive Flutter Example App**: Replaced CLI script in `example/main.dart` with a complete Material 3 Flutter application featuring interactive playgrounds for Classification, Urgency Scoring, Verification, and Workflow Routing.
+* **Model Download UI**: Added live progress tracking for Hugging Face model downloads in the Flutter example.
+* **Simplified Documentation**: Overhauled `README.md` to guide users step-by-step from installation to basic usage.
+* **Cleaned API Interfaces**: Removed legacy server configuration requirements from docs and client descriptions.
+
 ## 0.5.0
 
 * **Hugging Face Hub hosting**: Model weights are hosted on Hugging Face at [`saipy10/qlaya`](https://huggingface.co/saipy10/qlaya) with direct download support.

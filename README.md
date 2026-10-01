@@ -5,134 +5,167 @@
 [![GitHub](https://img.shields.io/badge/GitHub-saipy10%2FQlaya--Flutter-blue?logo=github)](https://github.com/saipy10/Qlaya-Flutter)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-**QLaya Flutter** — Fast, local, on-device decision engine client for Flutter and Dart, powered by the **`qlaya.int8.onnx`** quantized model hosted on Hugging Face Hub.
+**QLaya Flutter** is a fast, type-safe Flutter & Dart client for the QLaya on-device decision engine, powered by the **`qlaya.int8.onnx`** model hosted on Hugging Face Hub.
 
-[Hugging Face Model](https://huggingface.co/saipy10/qlaya) | [GitHub Repository](https://github.com/saipy10/Qlaya-Flutter) | [pub.dev Package](https://pub.dev/packages/qlaya_flutter) | [Issues & Feedback](https://github.com/saipy10/Qlaya-Flutter/issues)
-
----
-
-## Model Specifications
-
-The official quantized model weights are hosted on Hugging Face Hub at [**`saipy10/qlaya`**](https://huggingface.co/saipy10/qlaya):
-
-- **Model File**: `qlaya.int8.onnx` (~571.9 MB)
-- **Quantization**: ONNX INT8 per-channel
-- **Latency (p50)**: ~134.7 ms
-- **RAM Working Set**: ~590 MB
-- **Direct Download URL**: `https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx`
-- **Capabilities**: Fast on-device classification, continuous scoring, boolean verification, and workflow routing.
+It enables intelligent, low-latency decision making directly inside your Flutter and Dart applications:
+* 🎯 **Intent & Category Classification** — Map user inputs to target categories
+* ⚡ **Continuous Scoring** — Evaluate severity, urgency, or sentiment on a 0.0 to 1.0 scale
+* ✅ **Boolean Verification** — Validate hypotheses and statements against input text
+* 🔀 **Workflow Routing** — Automatically route requests and inquiries to appropriate handlers
 
 ---
 
 ## Installation
 
-Add to your Flutter or Dart project:
+Add `qlaya_flutter` to your project dependencies:
 
 ```sh
 flutter pub add qlaya_flutter
-# or for Dart CLI / server apps:
+```
+
+Or for pure Dart applications:
+
+```sh
 dart pub add qlaya_flutter
 ```
 
 ---
 
-## Downloading the Model
+## Model Download
 
-You can obtain the model weights either via a command or directly within your code:
+The official quantized model (`qlaya.int8.onnx`, ~571.9 MB) is hosted on Hugging Face Hub at [**saipy10/qlaya**](https://huggingface.co/saipy10/qlaya).
 
-### 1. Download via CLI Command
+You can download it using either the command line or directly inside your Dart/Flutter code:
 
-Run the built-in downloader to fetch `qlaya.int8.onnx` from Hugging Face into your current directory or custom path:
+### Option A: Download via Command Line
+
+Run the built-in downloader to save the model to your project:
 
 ```sh
-# Download into current directory
+# Downloads qlaya.int8.onnx to the current directory
 dart run qlaya_flutter:download
 
-# Or specify a custom target directory
+# Or specify a target directory
 dart run qlaya_flutter:download --dir=./models
-
-# Force re-download
-dart run qlaya_flutter:download --force
 ```
 
-### 2. Download / Ensure Programmatically in Dart / Flutter
+### Option B: Download Programmatically in Flutter
 
-You can also ensure the model exists or download it on-the-fly directly inside your app:
+You can verify and download the model weights on-demand with progress updates:
 
 ```dart
 import 'package:qlaya_flutter/qlaya_flutter.dart';
 
-void main() async {
-  // Check if model is already downloaded
-  if (!QLayaDownloader.isModelAvailable()) {
-    print('Downloading model weights from Hugging Face...');
-    await QLayaDownloader.download(
-      onProgress: (p) {
-        print('${p.percent}% (${p.receivedMb} / ${p.totalMb} MB)');
-      },
-    );
-  }
+Future<void> initModel() async {
+  // Checks local presence and downloads from Hugging Face if missing
+  await QLayaDownloader.ensureModel(
+    onProgress: (progress) {
+      print('Downloading: ${progress.percent}% (${progress.receivedMb} / ${progress.totalMb} MB)');
+    },
+  );
 }
 ```
 
 ---
 
-## Inference Usage
+## Basic Usage
 
-Use `QLayaClient` to run type-safe decision tasks:
+### 1. Initialize Client
 
 ```dart
 import 'package:qlaya_flutter/qlaya_flutter.dart';
 
-void main() async {
-  // Connects to local server (defaults to http://localhost:8000)
-  final client = QLayaClient();
+final client = QLayaClient(); // Uses default endpoint or custom baseUrl
+```
 
-  // Task 1: Intent Classification
-  final intent = await client.classify(
-    text: 'I was charged twice, please refund',
-    choices: ['refund_request', 'subscription_cancel', 'tech_support'],
-  );
-  print('Classified Choice: ${intent.choice}');
+### 2. Intent Classification
 
-  // Task 2: Continuous Scoring / Rating
-  final urgency = await client.score(
-    text: 'CRITICAL: Database connection timeout in production!',
-    instruction: 'Rate urgency from 0.0 (low) to 1.0 (emergency)',
-  );
-  print('Urgency Score: ${urgency.score}');
+Classify input text into one of several predefined choices:
 
-  // Task 3: Boolean Verification
-  final isComplaint = await client.verify(
-    text: 'Product stopped working after 2 days.',
-    statement: 'Customer is filing a complaint',
-  );
-  print('Is Complaint: ${isComplaint.value}');
+```dart
+final result = await client.classify(
+  text: 'I was charged twice on my monthly invoice, please refund my money',
+  choices: ['refund_request', 'subscription_cancel', 'tech_support', 'billing_ops'],
+);
 
-  // Task 4: Workflow Routing
-  final routing = await client.route(
-    text: 'Need to add 15 enterprise seats for next quarter',
-    routes: ['sales_enterprise', 'tier1_support', 'billing_ops'],
-  );
-  print('Route To: ${routing.route}');
+print('Choice: ${result.choice}');
+print('Confidence: ${result.confidence}');
+```
 
-  client.close();
-}
+### 3. Continuous Scoring / Rating
+
+Rate the urgency, priority, or severity of an incident on a 0.0 to 1.0 scale:
+
+```dart
+final urgency = await client.score(
+  text: 'CRITICAL: Database connection pool completely exhausted in production!',
+  instruction: 'Rate the urgency level from 0.0 (low) to 1.0 (emergency)',
+);
+
+print('Urgency Score: ${urgency.score}');
+```
+
+### 4. Boolean Verification
+
+Verify whether a condition or hypothesis holds true for the input:
+
+```dart
+final verification = await client.verify(
+  text: 'The application crashes immediately whenever I tap my profile picture',
+  statement: 'User is reporting a software bug',
+);
+
+print('Verified: ${verification.value}'); // true
+```
+
+### 5. Workflow Routing
+
+Route customer requests or messages to the appropriate team or service:
+
+```dart
+final routing = await client.route(
+  text: 'We need to upgrade our plan to 25 enterprise user seats for next quarter',
+  routes: ['sales_enterprise', 'tier1_support', 'billing_ops', 'legal_compliance'],
+);
+
+print('Target Route: ${routing.route}');
+```
+
+### 6. Clean Up Resources
+
+```dart
+client.close();
 ```
 
 ---
 
-## Running the Inference Server
+## Interactive Flutter Example
 
-Start the local QLaya engine server using the downloaded ONNX model:
+This package includes a full Material 3 Flutter application in the [`example/`](example/) directory demonstrating all four decision tasks and model download management:
+
+To run the example app:
 
 ```sh
-pip install qlaya[serve]
-qlaya-serve --model qlaya.int8.onnx --port 8000
+cd example
+flutter run
 ```
+
+---
+
+## Model Specifications
+
+| Parameter | Specification |
+| :--- | :--- |
+| **Model Variant** | `qlaya.int8.onnx` |
+| **Host Repository** | [Hugging Face (`saipy10/qlaya`)](https://huggingface.co/saipy10/qlaya) |
+| **Direct Download** | `https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx` |
+| **Quantization** | INT8 per-channel |
+| **Latency (p50)** | ~134.7 ms |
+| **RAM Working Set**| ~590 MB |
+| **Model Size** | ~571.9 MB |
 
 ---
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE).
+Apache-2.0 — see [LICENSE](LICENSE) for details.
