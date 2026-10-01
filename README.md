@@ -5,6 +5,10 @@
 [![GitHub](https://img.shields.io/badge/GitHub-saipy10%2FQlaya--Flutter-blue?logo=github)](https://github.com/saipy10/Qlaya-Flutter)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
+<p align="center">
+  <img src="cover.svg" alt="QLaya Flutter" width="100%" />
+</p>
+
 **QLaya Flutter** is a fast, type-safe Flutter & Dart client for the QLaya on-device decision engine, powered by the **`qlaya.int8.onnx`** model hosted on Hugging Face Hub.
 
 It enables intelligent, low-latency decision making directly inside your Flutter and Dart applications:
