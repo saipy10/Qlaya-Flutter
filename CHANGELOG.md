@@ -1,3 +1,9 @@
+## 0.5.2
+
+* **Visual Cover Banner**: Added official vector-wrapped `cover.svg` hero banner to package documentation.
+* **Streamlined Repository**: Added model file patterns to `.gitignore` and removed model artifacts from version control.
+* **Documentation Polish**: Refined README structure and visual presentation.
+
 ## 0.5.1
 
 * **Interactive Flutter Example App**: Replaced CLI script in `example/main.dart` with a complete Material 3 Flutter application featuring interactive playgrounds for Classification, Urgency Scoring, Verification, and Workflow Routing.

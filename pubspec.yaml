@@ -3,7 +3,7 @@ description: >
   QLaya Flutter & Dart client for the fast on-device decision engine
   powered by the qlaya.int8.onnx model for classification, scoring,
   verification, and routing tasks.
-version: 0.5.1
+version: 0.5.2
 repository: https://github.com/saipy10/Qlaya-Flutter
 homepage: https://github.com/saipy10/Qlaya-Flutter
 issue_tracker: https://github.com/saipy10/Qlaya-Flutter/issues
