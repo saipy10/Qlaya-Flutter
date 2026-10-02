@@ -32,10 +32,13 @@ void main() {
     });
 
     test('resolve legacy aliases map to bundled int8 model', () {
-      expect(QLayaModels.resolve('QLaya-TopProduction').fileName, equals('qlaya.int8.onnx'));
-      expect(QLayaModels.resolve('qlaya-int8').fileName, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.resolve('QLaya-TopProduction').fileName,
+          equals('qlaya.int8.onnx'));
+      expect(QLayaModels.resolve('qlaya-int8').fileName,
+          equals('qlaya.int8.onnx'));
       expect(QLayaModels.resolve('int8').fileName, equals('qlaya.int8.onnx'));
-      expect(QLayaModels.resolve('TOPPRODUCTION').fileName, equals('qlaya.int8.onnx'));
+      expect(QLayaModels.resolve('TOPPRODUCTION').fileName,
+          equals('qlaya.int8.onnx'));
     });
 
     test('resolve throws ArgumentError for removed legacy models', () {
@@ -56,7 +59,8 @@ void main() {
         expect(
           () => QLayaModels.resolve(modelId),
           throwsArgumentError,
-          reason: '$modelId should be rejected because only qlaya.int8.onnx is supported',
+          reason:
+              '$modelId should be rejected because only qlaya.int8.onnx is supported',
         );
       }
     });
@@ -64,11 +68,13 @@ void main() {
     test('downloadUrl resolves to Hugging Face Hub direct link', () {
       expect(
         QLayaModels.int8.downloadUrl,
-        equals('https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx'),
+        equals(
+            'https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx'),
       );
       expect(
         QLayaDownloader.getDownloadUri().toString(),
-        equals('https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx'),
+        equals(
+            'https://huggingface.co/saipy10/qlaya/resolve/main/qlaya.int8.onnx'),
       );
     });
 
@@ -76,11 +82,15 @@ void main() {
       final defaultFile = QLayaDownloader.getModelFile();
       expect(defaultFile.path, equals('qlaya.int8.onnx'));
 
-      final customDirFile = QLayaDownloader.getModelFile(directory: 'custom/dir');
-      expect(customDirFile.path.replaceAll('\\', '/'), contains('custom/dir/qlaya.int8.onnx'));
+      final customDirFile =
+          QLayaDownloader.getModelFile(directory: 'custom/dir');
+      expect(customDirFile.path.replaceAll('\\', '/'),
+          contains('custom/dir/qlaya.int8.onnx'));
 
-      final customPathFile = QLayaDownloader.getModelFile(path: '/custom/path/model.onnx');
-      expect(customPathFile.path.replaceAll('\\', '/'), equals('/custom/path/model.onnx'));
+      final customPathFile =
+          QLayaDownloader.getModelFile(path: '/custom/path/model.onnx');
+      expect(customPathFile.path.replaceAll('\\', '/'),
+          equals('/custom/path/model.onnx'));
     });
 
     test('validates local qlaya.int8.onnx file if present on disk', () {

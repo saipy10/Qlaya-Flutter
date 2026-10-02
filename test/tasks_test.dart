@@ -6,7 +6,9 @@ import 'package:qlaya_flutter/qlaya_flutter.dart';
 
 void main() {
   group('QLaya Tasks (Powered by qlaya.int8.onnx)', () {
-    test('Classification Task creates correct payload with qlaya.int8.onnx and parses result', () async {
+    test(
+        'Classification Task creates correct payload with qlaya.int8.onnx and parses result',
+        () async {
       late Map<String, dynamic> capturedBody;
 
       final mockClient = MockClient((request) async {
@@ -30,7 +32,8 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       final result = await client.classify(
         text: 'I was double charged on my card, please refund',
@@ -39,14 +42,16 @@ void main() {
       );
 
       // Verify request payload used qlaya.int8.onnx
-      expect(capturedBody['text'], equals('I was double charged on my card, please refund'));
+      expect(capturedBody['text'],
+          equals('I was double charged on my card, please refund'));
       expect(capturedBody['model']['id'], equals('qlaya.int8.onnx'));
       expect(capturedBody['model']['file'], equals('qlaya.int8.onnx'));
       expect(capturedBody['model']['repo'], equals('saipy10/qlaya'));
       expect(capturedBody['model']['subfolder'], equals('qlaya-int8'));
       expect(capturedBody['questions'][0]['id'], equals('intent'));
       expect(capturedBody['questions'][0]['type'], equals('choice'));
-      expect(capturedBody['questions'][0]['choices'], contains('billing_refund'));
+      expect(
+          capturedBody['questions'][0]['choices'], contains('billing_refund'));
 
       // Verify parsed typed result
       expect(result.choice, equals('billing_refund'));
@@ -78,7 +83,8 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       final result = await client.score(
         text: 'Production database is offline and customers cannot log in!',
@@ -113,14 +119,16 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
       final result = await client.score(text: 'Good service');
 
       expect(result.score, equals(0.75));
       client.close();
     });
 
-    test('Bool Verification Task evaluates conditions with qlaya.int8.onnx', () async {
+    test('Bool Verification Task evaluates conditions with qlaya.int8.onnx',
+        () async {
       late Map<String, dynamic> capturedBody;
 
       final mockClient = MockClient((request) async {
@@ -141,11 +149,13 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       final result = await client.verify(
         text: 'This product stopped working after 2 days. Terrible quality.',
-        statement: 'The customer is expressing dissatisfaction or filing a complaint',
+        statement:
+            'The customer is expressing dissatisfaction or filing a complaint',
         questionId: 'is_complaint',
       );
 
@@ -176,7 +186,8 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
       final result = await client.verify(
         text: 'Cancel order',
         statement: 'User wants cancellation',
@@ -186,7 +197,8 @@ void main() {
       client.close();
     });
 
-    test('Routing Task resolves workflow destination with qlaya.int8.onnx', () async {
+    test('Routing Task resolves workflow destination with qlaya.int8.onnx',
+        () async {
       late Map<String, dynamic> capturedBody;
 
       final mockClient = MockClient((request) async {
@@ -207,16 +219,23 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       final result = await client.route(
         text: 'NullPointerException in auth module during oauth callback',
-        routes: ['tier1_support', 'tier2_billing', 'tier3_engineering', 'general_faq'],
+        routes: [
+          'tier1_support',
+          'tier2_billing',
+          'tier3_engineering',
+          'general_faq'
+        ],
         instruction: 'Route this issue to the most qualified department',
       );
 
       expect(capturedBody['model']['id'], equals('qlaya.int8.onnx'));
-      expect(capturedBody['questions'][0]['choices'], contains('tier3_engineering'));
+      expect(capturedBody['questions'][0]['choices'],
+          contains('tier3_engineering'));
       expect(result.route, equals('tier3_engineering'));
       expect(result.confidence, equals(0.94));
       expect(result.toString(), contains('tier3_engineering'));
@@ -242,7 +261,8 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       final task = QLayaTasks.classify(
         text: 'Quarterly earnings report is ready for audit',
@@ -276,7 +296,8 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       final result = await client.predict(
         text: 'Hello QLaya',
@@ -294,17 +315,21 @@ void main() {
         return http.Response('Internal Server Error', 500);
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       expect(
         () => client.classify(text: 'test', choices: ['a', 'b']),
-        throwsA(isA<QLayaApiException>().having((e) => e.statusCode, 'statusCode', 500)),
+        throwsA(isA<QLayaApiException>()
+            .having((e) => e.statusCode, 'statusCode', 500)),
       );
 
       client.close();
     });
 
-    test('throws StateError when server response lacks expected question answer', () async {
+    test(
+        'throws StateError when server response lacks expected question answer',
+        () async {
       final mockClient = MockClient((request) async {
         return http.Response(
           jsonEncode({'model_id': 'qlaya.int8.onnx', 'answers': []}),
@@ -313,7 +338,8 @@ void main() {
         );
       });
 
-      final client = QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
+      final client =
+          QLayaClient(baseUrl: 'http://localhost:8000', httpClient: mockClient);
 
       expect(
         () => client.classify(text: 'test', choices: ['a', 'b']),

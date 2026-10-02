@@ -22,3 +22,7 @@ Thumbs.db
 *.onnx.data
 *.download.tmp
 
+# Documentation
+doc/
+
+

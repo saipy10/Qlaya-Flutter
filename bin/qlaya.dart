@@ -1,12 +1,14 @@
 #!/usr/bin/env dart
+
 /// QLaya CLI dispatcher.
+library;
+
 import 'download.dart' as download_cli;
 
 Future<void> main(List<String> args) async {
   if (args.isEmpty || args.first == 'download') {
-    final subArgs = args.isNotEmpty && args.first == 'download'
-        ? args.sublist(1)
-        : args;
+    final subArgs =
+        args.isNotEmpty && args.first == 'download' ? args.sublist(1) : args;
     await download_cli.main(subArgs);
   } else if (args.first == '--help' || args.first == '-h') {
     print('''

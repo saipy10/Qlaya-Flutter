@@ -50,10 +50,12 @@ class _QLayaHomePageState extends State<QLayaHomePage>
     text: 'I was charged twice on my monthly invoice, please refund my money',
   );
   final TextEditingController _scoreController = TextEditingController(
-    text: 'CRITICAL: Database connection pool completely exhausted in production!',
+    text:
+        'CRITICAL: Database connection pool completely exhausted in production!',
   );
   final TextEditingController _verifyController = TextEditingController(
-    text: 'The application crashes immediately whenever I tap my profile picture',
+    text:
+        'The application crashes immediately whenever I tap my profile picture',
   );
   final TextEditingController _verifyStatementController =
       TextEditingController(text: 'User is reporting a software bug');
@@ -131,7 +133,12 @@ class _QLayaHomePageState extends State<QLayaHomePage>
   Future<void> _runClassification() async {
     setState(() => _isRunningTask = true);
     final text = _classifyController.text.trim();
-    final choices = ['refund_request', 'subscription_cancel', 'tech_support', 'billing_ops'];
+    final choices = [
+      'refund_request',
+      'subscription_cancel',
+      'tech_support',
+      'billing_ops'
+    ];
 
     try {
       final res = await _client.classify(text: text, choices: choices);
@@ -171,7 +178,9 @@ class _QLayaHomePageState extends State<QLayaHomePage>
       // Local fallback simulation if endpoint is offline
       final lower = text.toLowerCase();
       double score = 0.5;
-      if (lower.contains('critical') || lower.contains('exhausted') || lower.contains('down')) {
+      if (lower.contains('critical') ||
+          lower.contains('exhausted') ||
+          lower.contains('down')) {
         score = 0.96;
       }
       setState(() => _scoreResult = score);
@@ -194,7 +203,9 @@ class _QLayaHomePageState extends State<QLayaHomePage>
     } catch (_) {
       // Local fallback simulation if endpoint is offline
       final lower = text.toLowerCase();
-      final isBug = lower.contains('crash') || lower.contains('error') || lower.contains('bug');
+      final isBug = lower.contains('crash') ||
+          lower.contains('error') ||
+          lower.contains('bug');
       setState(() {
         _verifyResult = isBug;
         _verifyConfidence = 0.97;
@@ -207,7 +218,12 @@ class _QLayaHomePageState extends State<QLayaHomePage>
   Future<void> _runRouting() async {
     setState(() => _isRunningTask = true);
     final text = _routeController.text.trim();
-    final routes = ['sales_enterprise', 'tier1_support', 'billing_ops', 'legal_compliance'];
+    final routes = [
+      'sales_enterprise',
+      'tier1_support',
+      'billing_ops',
+      'legal_compliance'
+    ];
 
     try {
       final res = await _client.route(text: text, routes: routes);
@@ -220,7 +236,9 @@ class _QLayaHomePageState extends State<QLayaHomePage>
       final lower = text.toLowerCase();
       String simulated = 'tier1_support';
       double conf = 0.91;
-      if (lower.contains('seats') || lower.contains('enterprise') || lower.contains('upgrade')) {
+      if (lower.contains('seats') ||
+          lower.contains('enterprise') ||
+          lower.contains('upgrade')) {
         simulated = 'sales_enterprise';
         conf = 0.99;
       }
@@ -261,7 +279,8 @@ class _QLayaHomePageState extends State<QLayaHomePage>
           // Model Card
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -275,7 +294,8 @@ class _QLayaHomePageState extends State<QLayaHomePage>
                           color: theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(Icons.smart_toy, color: theme.colorScheme.primary),
+                        child: Icon(Icons.smart_toy,
+                            color: theme.colorScheme.primary),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -299,19 +319,24 @@ class _QLayaHomePageState extends State<QLayaHomePage>
                       ),
                       Chip(
                         avatar: Icon(
-                          _modelAvailable ? Icons.check_circle : Icons.cloud_outlined,
+                          _modelAvailable
+                              ? Icons.check_circle
+                              : Icons.cloud_outlined,
                           size: 16,
                           color: _modelAvailable ? Colors.green : Colors.blue,
                         ),
                         label: Text(
                           _modelAvailable ? 'Available' : 'Remote Hub',
                           style: TextStyle(
-                            color: _modelAvailable ? Colors.green[800] : Colors.blue[800],
+                            color: _modelAvailable
+                                ? Colors.green[800]
+                                : Colors.blue[800],
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        backgroundColor:
-                            _modelAvailable ? Colors.green[50] : Colors.blue[50],
+                        backgroundColor: _modelAvailable
+                            ? Colors.green[50]
+                            : Colors.blue[50],
                       ),
                     ],
                   ),
@@ -362,10 +387,12 @@ class _QLayaHomePageState extends State<QLayaHomePage>
   Widget _buildClassificationTab() {
     return _buildTaskContainer(
       title: 'Intent & Category Classification',
-      description: 'Categorizes unstructured text into one of several predefined choices.',
+      description:
+          'Categorizes unstructured text into one of several predefined choices.',
       inputController: _classifyController,
       inputLabel: 'Inquiry or Message',
-      optionsLabel: 'Candidate Choices: [refund_request, subscription_cancel, tech_support, billing_ops]',
+      optionsLabel:
+          'Candidate Choices: [refund_request, subscription_cancel, tech_support, billing_ops]',
       buttonLabel: 'Classify Message',
       onRun: _runClassification,
       resultWidget: _classifyResult != null
@@ -391,7 +418,8 @@ class _QLayaHomePageState extends State<QLayaHomePage>
       resultWidget: _scoreResult != null
           ? _buildResultCard(
               title: 'Urgency Rating',
-              value: '${(_scoreResult! * 100).toStringAsFixed(1)}% (${_scoreResult!.toStringAsFixed(3)})',
+              value:
+                  '${(_scoreResult! * 100).toStringAsFixed(1)}% (${_scoreResult!.toStringAsFixed(3)})',
               color: _scoreResult! > 0.7 ? Colors.red : Colors.orange,
             )
           : null,
@@ -401,7 +429,8 @@ class _QLayaHomePageState extends State<QLayaHomePage>
   Widget _buildVerificationTab() {
     return _buildTaskContainer(
       title: 'Boolean Condition Verification',
-      description: 'Evaluates whether a specific statement holds true for the input text.',
+      description:
+          'Evaluates whether a specific statement holds true for the input text.',
       inputController: _verifyController,
       inputLabel: 'User Message',
       extraWidget: Padding(
@@ -430,10 +459,12 @@ class _QLayaHomePageState extends State<QLayaHomePage>
   Widget _buildRoutingTab() {
     return _buildTaskContainer(
       title: 'Workflow & Destination Routing',
-      description: 'Directs messages or requests to the appropriate operational department.',
+      description:
+          'Directs messages or requests to the appropriate operational department.',
       inputController: _routeController,
       inputLabel: 'Inquiry',
-      optionsLabel: 'Destinations: [sales_enterprise, tier1_support, billing_ops, legal_compliance]',
+      optionsLabel:
+          'Destinations: [sales_enterprise, tier1_support, billing_ops, legal_compliance]',
       buttonLabel: 'Resolve Target Route',
       onRun: _runRouting,
       resultWidget: _routeResult != null
@@ -467,9 +498,12 @@ class _QLayaHomePageState extends State<QLayaHomePage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text(description, style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+              Text(description,
+                  style: TextStyle(fontSize: 13, color: Colors.grey[700])),
               const SizedBox(height: 12),
               TextField(
                 controller: inputController,
@@ -482,7 +516,8 @@ class _QLayaHomePageState extends State<QLayaHomePage>
               const SizedBox(height: 10),
               if (extraWidget != null) extraWidget,
               if (optionsLabel != null) ...[
-                Text(optionsLabel, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                Text(optionsLabel,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                 const SizedBox(height: 10),
               ],
               SizedBox(

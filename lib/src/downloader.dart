@@ -49,7 +49,8 @@ class QLayaDownloader {
   /// Resolves the direct download URL for a given model.
   static Uri getDownloadUri([QLayaModelSpec? model]) {
     final m = model ?? QLayaModels.int8;
-    return Uri.parse('$huggingFaceBaseUrl/${m.repo}/resolve/main/${m.fileName}');
+    return Uri.parse(
+        '$huggingFaceBaseUrl/${m.repo}/resolve/main/${m.fileName}');
   }
 
   /// Checks whether the model file is already present on local disk.
@@ -101,7 +102,9 @@ class QLayaDownloader {
       model: spec,
     );
 
-    if (!overwrite && targetFile.existsSync() && targetFile.lengthSync() > 1024 * 1024) {
+    if (!overwrite &&
+        targetFile.existsSync() &&
+        targetFile.lengthSync() > 1024 * 1024) {
       final total = targetFile.lengthSync();
       onProgress?.call(
         QLayaDownloadProgress(bytesReceived: total, totalBytes: total),
@@ -137,7 +140,8 @@ class QLayaDownloader {
           }
           await _writeStreamToFile(redirectResp, tempFile, onProgress);
         } else {
-          throw HttpException('Redirect without location header', uri: downloadUri);
+          throw HttpException('Redirect without location header',
+              uri: downloadUri);
         }
       } else if (response.statusCode != 200) {
         throw HttpException(
@@ -181,7 +185,8 @@ class QLayaDownloader {
   }) async {
     final spec = model ?? QLayaModels.int8;
     if (isModelAvailable(path: path, directory: directory, model: spec)) {
-      final file = _resolveTargetFile(path: path, directory: directory, model: spec);
+      final file =
+          _resolveTargetFile(path: path, directory: directory, model: spec);
       onProgress?.call(
         QLayaDownloadProgress(
           bytesReceived: file.lengthSync(),

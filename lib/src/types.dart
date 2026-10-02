@@ -42,7 +42,8 @@ class QLayaAnswer {
       );
 
   @override
-  String toString() => 'QLayaAnswer(id: $id, value: $value, confidence: $confidence)';
+  String toString() =>
+      'QLayaAnswer(id: $id, value: $value, confidence: $confidence)';
 }
 
 /// The complete prediction response from the QLaya server.

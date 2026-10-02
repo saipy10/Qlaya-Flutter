@@ -1,13 +1,18 @@
 #!/usr/bin/env dart
+
 /// Command-line tool to download the QLaya ONNX model from Hugging Face Hub.
 ///
 /// Usage:
-///   dart run qlaya_flutter:download [options]
+/// ```text
+/// dart run qlaya_flutter:download [options]
+/// ```
 ///
 /// Options:
-///   -d, --dir <path>     Directory to save the model file (defaults to current directory)
-///   -f, --force          Force re-download even if file already exists
-///   -h, --help           Show this help message
+/// - `-d, --dir <path>`: Directory to save the model file (defaults to current directory)
+/// - `-f, --force`: Force re-download even if file already exists
+/// - `-h, --help`: Show this help message
+library;
+
 import 'dart:io';
 import 'package:qlaya_flutter/qlaya_flutter.dart';
 
@@ -55,7 +60,9 @@ Future<void> main(List<String> args) async {
   print('Target Path   : ${targetFile.absolute.path}');
   print('--------------------------------------------------------');
 
-  if (!force && targetFile.existsSync() && targetFile.lengthSync() > 1024 * 1024) {
+  if (!force &&
+      targetFile.existsSync() &&
+      targetFile.lengthSync() > 1024 * 1024) {
     final sizeMb = (targetFile.lengthSync() / (1024 * 1024)).toStringAsFixed(1);
     print('Model already exists at: ${targetFile.path} ($sizeMb MB)');
     print('Use --force (-f) to overwrite and re-download.');
@@ -85,11 +92,14 @@ Future<void> main(List<String> args) async {
           final barWidth = 30;
           final completedWidth = (progress.fraction * barWidth).round();
           final remainingWidth = barWidth - completedWidth;
-          final bar = '=' * completedWidth + (remainingWidth > 0 ? '>' : '') + ' ' * (remainingWidth > 0 ? remainingWidth - 1 : 0);
+          final bar = '=' * completedWidth +
+              (remainingWidth > 0 ? '>' : '') +
+              ' ' * (remainingWidth > 0 ? remainingWidth - 1 : 0);
 
           final elapsedSec = stopwatch.elapsedMilliseconds / 1000.0;
           final speedMbS = elapsedSec > 0
-              ? (progress.bytesReceived / (1024 * 1024) / elapsedSec).toStringAsFixed(1)
+              ? (progress.bytesReceived / (1024 * 1024) / elapsedSec)
+                  .toStringAsFixed(1)
               : '0.0';
 
           stdout.write(
@@ -102,7 +112,8 @@ Future<void> main(List<String> args) async {
     );
 
     stopwatch.stop();
-    final totalSec = (stopwatch.elapsedMilliseconds / 1000.0).toStringAsFixed(1);
+    final totalSec =
+        (stopwatch.elapsedMilliseconds / 1000.0).toStringAsFixed(1);
     print('\n\nSuccessfully downloaded model in $totalSec seconds!');
     print('Saved to: ${file.absolute.path}');
     print('========================================================');

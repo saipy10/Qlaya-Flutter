@@ -1,3 +1,9 @@
+## 0.5.4
+
+* **Static Analysis & Lint Fixes**: Resolved all pana static analysis warnings including dangling library doc comments and unescaped angle brackets in CLI doc comments.
+* **Code Formatting & Lint Rules**: Added `analysis_options.yaml` adhering to `package:lints/recommended.yaml` and formatted all codebase files with `dart format`.
+* **Clean Dartdoc**: Ensured 100% warning-free and error-free documentation build.
+
 ## 0.5.3
 
 * **pub.dev Image Compatibility**: Updated cover banner in `README.md` to use direct GitHub CDN asset URL for `cover.png`, ensuring reliable rendering on pub.dev and GitHub.
